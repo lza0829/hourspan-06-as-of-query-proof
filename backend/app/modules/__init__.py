@@ -5,7 +5,6 @@ STUBS = [
     "null_to_value_open",
     "logical_delete_close",
     "current_mirror_resync",
-    "as_of_query_proof",
     "business_key_rebind",
     "weekday_mask_split",
     "open_close_order_fence",

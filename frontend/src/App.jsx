@@ -4,6 +4,7 @@ import Overview from "./pages/Overview.jsx";
 import Ingest from "./pages/Ingest.jsx";
 import Detect from "./pages/Detect.jsx";
 import History from "./pages/History.jsx";
+import AsOf from "./pages/AsOf.jsx";
 import Current from "./pages/Current.jsx";
 import Proofs from "./pages/Proofs.jsx";
 import Settings from "./pages/Settings.jsx";
@@ -13,6 +14,7 @@ const links = [
   ["/ingest", "入档"],
   ["/detect", "变更检测"],
   ["/history", "历史维"],
+  ["/as-of", "时点投影"],
   ["/current", "当前镜"],
   ["/proofs", "核证"],
   ["/settings", "站规"],
@@ -40,6 +42,7 @@ export default function App() {
           <Route path="/ingest" element={<Ingest />} />
           <Route path="/detect" element={<Detect />} />
           <Route path="/history" element={<History />} />
+          <Route path="/as-of" element={<AsOf />} />
           <Route path="/current" element={<Current />} />
           <Route path="/proofs" element={<Proofs />} />
           <Route path="/settings" element={<Settings />} />

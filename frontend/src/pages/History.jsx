@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api.js";
 
 export default function History() {
@@ -63,7 +64,7 @@ export default function History() {
           <thead>
             <tr>
               <th>历史行</th><th>门店</th><th>开-闭</th><th>mask</th><th>状态</th>
-              <th>valid_from</th><th>valid_to</th><th>当前</th><th>hash</th>
+              <th>valid_from</th><th>valid_to</th><th>当前</th><th>hash</th><th>时点查</th>
             </tr>
           </thead>
           <tbody>
@@ -78,6 +79,11 @@ export default function History() {
                 <td>{r.valid_to || "—"}</td>
                 <td>{r.is_current ? "是" : "否"}</td>
                 <td className="mono">{r.row_hash}</td>
+                <td>
+                  <Link to={`/as-of?store_id=${encodeURIComponent(r.store_id)}&as_of_ts=${encodeURIComponent(r.valid_from)}`}>
+                    段首点查
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>

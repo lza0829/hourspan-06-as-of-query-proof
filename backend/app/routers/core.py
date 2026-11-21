@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, HTTPException
 
 from app.db import connect
 from app.modules import STUBS
+from app.modules import as_of_query_proof as asof
 from app.services import catalog, detect, ingest, scd
 
 router = APIRouter(prefix="/api")
@@ -146,6 +147,42 @@ def run_scd(body: dict = Body(...)):
 @router.post("/proofs/rebuild")
 def rebuild_proofs():
     return scd.rebuild_proofs()
+
+
+@router.post("/as-of/query")
+def as_of_query(body: dict = Body(...)):
+    """时点投影点查：store_id+as_of_ts → 覆盖该时点的 hist 段（未命中明确标记）。
+
+    落库形态甲：proof 写入 as_of_proofs；失败闭路径甲：proof 与结果同事务，
+    异常整体回滚。fault 为夹具故障注入（仅测试失败闭用）。
+    """
+    try:
+        return asof.query_as_of(
+            body.get("store_id"),
+            body.get("as_of_ts"),
+            fault=body.get("fault"),
+        )
+    except asof.AsOfInputError as exc:
+        raise HTTPException(400, str(exc))
+    except asof.AsOfOverlapError as exc:
+        raise HTTPException(409, str(exc))
+    except asof.AsOfFault as exc:
+        raise HTTPException(500, str(exc))
+
+
+@router.get("/as-of/proofs")
+def as_of_proofs(store_id: str | None = None):
+    """只读：as-of 证明清单（命中 hist_id / valid 区间 / 属性 hash / 未命中标记）。"""
+    return asof.list_proofs(store_id)
+
+
+@router.get("/as-of/verify")
+def as_of_verify(proof_id: int | None = None):
+    """as-of 核证只读接口：对已提交 hist 重推导，逐条比对 proof，不落库。"""
+    try:
+        return asof.verify_proofs(proof_id)
+    except asof.AsOfInputError as exc:
+        raise HTTPException(404, str(exc))
 
 
 @router.get("/settings")
